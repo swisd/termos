@@ -24,6 +24,7 @@ check_multiboot:
 	ret
 .no_multiboot:
 	mov al, "M"
+	mov ah, "B"
 	jmp error
 
 check_cpuid:
@@ -42,6 +43,7 @@ check_cpuid:
 	ret
 .no_cpuid:
 	mov al, "C"
+	mov ah, "I"
 	jmp error
 
 check_long_mode:
@@ -58,6 +60,7 @@ check_long_mode:
 	ret
 .no_long_mode:
 	mov al, "L"
+	mov ah, "M"
 	jmp error
 
 setup_page_tables:
@@ -107,11 +110,12 @@ enable_paging:
 	ret
 
 error:
-	; print "ERR: X" where X is the error code
+	; print "ERR: XY" where XY is the error code
 	mov dword [0xb8000], 0x4f524f45
 	mov dword [0xb8004], 0x4f3a4f52
 	mov dword [0xb8008], 0x4f204f20
 	mov byte  [0xb800a], al
+	mov byte  [0xb800c], ah
 	hlt
 
 section .bss
@@ -129,7 +133,8 @@ stack_top:
 section .rodata
 gdt64:
 	dq 0 ; zero entry
-.code_segment: equ $ - gdt64
+.code_segment:
+    equ $ - gdt64
 	dq (1 << 43) | (1 << 44) | (1 << 47) | (1 << 53) ; code segment
 .pointer:
 	dw $ - gdt64 - 1 ; length
