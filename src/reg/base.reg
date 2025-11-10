@@ -1,1 +1,5 @@
-
+grp system [
+    key nonce [
+        "value"=word:0F2
+    ]
+]
